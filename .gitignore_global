@@ -1,0 +1,37 @@
+*~
+
+# **OS X ignores**
+.DS_Store
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# **SASS ignore**
+.sass-cache
+
+# **TextMate ignores**
+*.tmproj
+*.tmproject
+tmtags
+
+# **Archive File ignores**
+*.7z
+*.jar
+*.rar
+*.zip
+*.gz
+*.bzip
+*.xz
+*.lzma
+*.iso
+*.tar
+*.dmg
+*.xpi
+*.gem
+*.egg
+*.deb
+*.rpm
