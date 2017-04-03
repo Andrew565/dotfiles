@@ -2,13 +2,20 @@
 # There are many like it, but this one's mine.
 # http://about.me/andrewsteele
 
+test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+
+# ***** History Searching with Up and Down keys *****
+
+bind '"\e[A":history-search-backward'
+bind '"\e[B":history-search-forward'
+
 # ***** Basic Environment Setup *****
 
 # Setup Path Vars
 export PATH="/Applications/Postgres.app/Contents/Versions/9.3/bin:/usr/local/bin:/usr/local/sbin:/usr/local/opt/ruby/bin:/usr/local/mysql/bin:~/bin:$PATH"
 export PATH=$(brew --prefix coreutils)/libexec/gnubin:$PATH
 export PATH="$PATH:/usr/texbin"
-export CDPATH=".:~/Projects:~/Projects/Andrew"
+export CDPATH=".:~/Projects"
 
 # Prefer US English and use UTF-8
 export LC_ALL="en_US.UTF-8"
@@ -18,16 +25,15 @@ export LANG="en_US"
 export EDITOR='subl -w'
 
 # Bash Completions
-if [ -f $(brew --prefix)/etc/bash_completion ]; then
-	. $(brew --prefix)/etc/bash_completion
+if [ -f ~/.git-completion.bash ]; then
+  . ~/.git-completion.bash
 fi
-complete -F _todo t
 
 # ***** ANYBAR FUNCTIONS *****
-. "/Users/andrew/Projects/Andrew/anybar-icon-journal/anybar.sh"
+# . "/Users/andrew/Projects/Andrew/anybar-icon-journal/anybar.sh"
 
 # ***** StatusItem Functions *****
-alias si="StatusItem -r"
+# alias si="StatusItem -r"
 
 # ***** MERCURIAL FUNCTIONS *****
 
@@ -77,6 +83,47 @@ hgmad() {
     cd ~/Projects/sde/sde-admin/
 }
 
+# ***** Git Functions *****
+
+# create new branch from a default named branch
+# modify the first line to make it an argument if desired
+gnew() {
+    DEST_BRANCH=$2
+    : ${DEST_BRANCH:='master'}
+    git co $DEST_BRANCH
+    git pull
+    git co -b "$1"
+    # bundle install
+    # bundle exec rake db:migrate
+    git push -u
+}
+
+# Get the latest changes on master pulled down locally
+# and then rebase them into/onto the current branch
+grm() {
+    CURRENT=`git rev-parse --abbrev-ref HEAD` # figures out the current branch
+    git checkout master
+    git pull
+    git checkout $CURRENT
+    git rebase master
+}
+
+# Switch branches by issue number or feature keyword
+# For example: gswitch 1808 == git checkout features/1808-click-on-avatar
+# NOTE: only works well if you use a unique description, thus the
+# recommendation to use the issue number
+gswitch() {
+    BRANCH=`git branch | grep "$1"`
+    git checkout $BRANCH
+}
+
+# ***** Other Bash Functions *****
+
+# finds runaway processes by name and kills them
+assassinate() {
+    ps ax | grep "$1" | grep -v grep | cut -f1 -d ' ' | xargs kill
+}
+
 # ***** ALIASES *****
 
 # Git Aliases
@@ -84,6 +131,7 @@ alias g="git"
 alias gs="git status"
 alias gl="git log"
 alias gg="git gui"
+alias gitnew="gnew"
 alias gpull="git pull"
 alias gpush="git push"
 alias grh="git reset --hard"
@@ -91,8 +139,12 @@ alias gcmm="git checkout --"
 alias gsm="git stash && git co master && git stash pop"
 alias gsd="git stash && git co development"
 alias gmd="git merge development"
+alias gmm="git merge master"
 alias gupdate="git co development && git pull"
 alias glatest="git co development && git pull"
+alias gmupdate="git co master && git pull"
+alias gcm="gmupdate"
+alias gphm="git push heroku master"
 
 # Mercurial (hg) Aliases
 alias hs="hg status"
@@ -118,30 +170,32 @@ alias eib="ember install:bower"
 alias ein="ember install:npm"
 alias eg="ember generate"
 alias ed="ember destroy"
-
-# Time Tracking Aliases
-alias punch="python /usr/local/bin/Punch.py"
-alias t="todo.sh"
-alias start="date"
-alias pause="start"
-alias end="start"
+alias ebp="ember build -o ../../resource-bundles/Ember.resource/ -prod"
+alias ebd="ember build -o ../../resource-bundles/Ember.resource/"
 
 # Basic Aliases
 alias ..="cd .."
 alias cd..="cd .."
+alias cdr="cd ~/remine/remine-app"
 alias p="cd ~/Projects"
-alias pa="cd ~/Projects/Andrew"
 alias h="history"
-alias a="atom"
-alias a.="atom ."
+# alias a="atom" # atom
+# alias a.="atom ." # atom
 alias o="open"
 alias o.="open ."
 alias s="subl"
 alias s.="subl ."
-alias ws.="ws ."
-alias sudo="sudo "
+# alias ws.="ws ." # WebStorm
+alias sudo="sudo " # allows sudo in aliases, IIRC
+
+# Bundle/Rails Aliases
 alias be="bundle exec"
 alias becc="bundle exec rake canvas:compile_assets"
+alias berdbm="bundle exec rake db:migrate"
+alias berdm="berdbm"
+alias migrate="bundle exec rake db:migrate"
+alias checkfornew="bundle install && migrate"
+alias cfn="checkfornew"
 alias ber="bundle exec rails"
 alias berc="bundle exec rails console"
 alias berg="bundle exec rails generate"
@@ -150,6 +204,8 @@ alias besc="bundle exec script/console"
 alias besg="bundle exec script/generate"
 alias bess="bundle exec script/server"
 alias engarde="bundle exec guard"
+alias fs="foreman start"
+alias regenNotes="be rake notifications:clear_notification_groups && be rake notifications:generate_notification_groups"
 alias prod="RAILS_ENV=production"
 
 # Grep Aliases
@@ -177,14 +233,6 @@ alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && k
 alias focusmode="defaults write com.apple.dock single-app -bool true && killall Dock"
 alias focusmodeoff="defaults write com.apple.dock single-app -bool false && killall Dock"
 
-# Use screensaver as wallpaper
-alias use_saver="/System/Library/Frameworks/ScreenSaver.framework/Resources/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine -background &"
-alias saver_off="ps ax | grep ScreenSaver | grep -v grep | cut -f1 -d ' ' | xargs kill"
-
-# Quick way to rebuild the Launch Services database and get rid
-# of duplicates in the Open With submenu.
-alias fixopenwith='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user'
-
 
 # ***** LS Tweaks *****
 
@@ -194,9 +242,6 @@ if ls --color > /dev/null 2>&1; then # GNU `ls`
 else # OS X `ls`
 	colorflag="-G"
 fi
-
-# List all files colorized in long format
-alias l="ls -l ${colorflag}"
 
 # List all files colorized in long format, including dot files
 alias la="ls -la ${colorflag}"
@@ -275,7 +320,7 @@ function _hg_prompt() {
 # \A for current time in hours and minutes (24-hour time)
 # \W for current working directory
 function _prompt_command() {
-    PS1="(\[${MUSTARD}\]\!\[${PURPLE}\]@\[${GREEN}\]\A\[${RESET}\]) \W\[${CYAN}\]$(_hg_prompt) $(_git_prompt)🔥 \[${RESET}\] "
+    PS1="(\[${YELLOW}\]\A\[${RESET}\]) \W $(_git_prompt)🔥 \[${RESET}\] "
 }
 PROMPT_COMMAND=_prompt_command
 
@@ -286,9 +331,6 @@ fi
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
 
-# project cd function
-pd() {
-  local projDir=$(pro search $1)
-  cd ${projDir}
-}
-alias bd=". bd -s"
+### Added for rbenv support
+eval "$(rbenv init -)"
+export PATH="$HOME/.yarn/bin:$PATH"
