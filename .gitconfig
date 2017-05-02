@@ -1,0 +1,36 @@
+[alias]
+	# other helpful aliases
+	s = status
+	cam = commit -am
+	last = cat-file commit HEAD
+	co = checkout
+	unstage = reset HEAD
+	staged = diff --cached
+	squash = rebase -i HEAD^
+	delete-local = branch -D
+	DL = branch -D
+	delete-remote = "!sh -c 'git push origin :$1' -"
+	branches = "!sh -c 'git branch -a | grep -v remotes'"
+	hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+
+	aliases = !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /'
+
+	# use like `git edit-unmerged; ...edit..., ...test..., get add-unmerged; get commit || rebase --continue
+	edit-unmerged = "!f() { git diff --name-status --diff-filter=U | cut -f2 ; }; $EDITOR `f`"
+	add-unmerged = "!f() { git diff --name-status --diff-filter=U | cut -f2 ; }; git add `f`"
+
+[apply]
+	whitespace = warn
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+	ui = true
+[help]
+	autocorrect = 1
+[status]
+	submodule = 1
+[push]
+	default = current
+[credential]
+	helper = osxkeychain
