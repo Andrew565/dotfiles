@@ -12,17 +12,15 @@ bind '"\e[B":history-search-forward'
 # ***** Basic Environment Setup *****
 
 # Setup Path Vars
-export PATH="/Applications/Postgres.app/Contents/Versions/9.3/bin:/usr/local/bin:/usr/local/sbin:/usr/local/opt/ruby/bin:/usr/local/mysql/bin:~/bin:$PATH"
 export PATH=$(brew --prefix coreutils)/libexec/gnubin:$PATH
-export PATH="$PATH:/usr/texbin"
-export CDPATH=".:~/Projects"
+export CDPATH=".:${HOME}/Projects"
 
 # Prefer US English and use UTF-8
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US"
 
 # Use Sublime Text as editor (instead of vim)
-export EDITOR='subl -w'
+export EDITOR='code -w'
 
 # Bash Completions
 if [ -f ~/.git-completion.bash ]; then
@@ -38,50 +36,50 @@ fi
 # ***** MERCURIAL FUNCTIONS *****
 
 # commit and close in one
-hgcc() {
-    CURRENT=`hg branch`
-    hg commit -m "$1 $CURRENT" --close-branch
-}
+# hgcc() {
+#     CURRENT=`hg branch`
+#     hg commit -m "$1 $CURRENT" --close-branch
+# }
 
 # create new branch from a default named branch
 # modify the first line to make it an argument if desired
-hgnew() {
-    DEST_BRANCH=$2
-    : ${DEST_BRANCH:='PCC'}
-    hg up $DEST_BRANCH
-    hg branch "$1"
-    hg commit -m "Started $1 branch"
-    hg push --new-branch
-}
+# hgnew() {
+#     DEST_BRANCH=$2
+#     : ${DEST_BRANCH:='PCC'}
+#     hg up $DEST_BRANCH
+#     hg branch "$1"
+#     hg commit -m "Started $1 branch"
+#     hg push --new-branch
+# }
 
 # commit and append the current branch automatically
-hgc() {
-    # get current branch name
-    CURRENT=`hg branch`
-    hg commit -m "$1 $CURRENT"
-}
+# hgc() {
+#     # get current branch name
+#     CURRENT=`hg branch`
+#     hg commit -m "$1 $CURRENT"
+# }
 
 # merge current branch into
-hgmac() {
-    # get current branch name
-    CURRENT=`hg branch`
-    DEST_BRANCH=$2
-    : ${DEST_BRANCH:='PCC'}
-    hg up $DEST_BRANCH
-    hg merge $CURRENT
-    hg commit -m "Merged $CURRENT branch"
-}
+# hgmac() {
+#     # get current branch name
+#     CURRENT=`hg branch`
+#     DEST_BRANCH=$2
+#     : ${DEST_BRANCH:='PCC'}
+#     hg up $DEST_BRANCH
+#     hg merge $CURRENT
+#     hg commit -m "Merged $CURRENT branch"
+# }
 
 # "deploy" latest SDE Admin changes by committing to solutions repo
-hgmad() {
-    CURRENT=`hg log -l 1 | grep summary | cut -d" " -f 7`
-    cd ~/Projects/sde/
-    hg pull
-    hg up
-    hg commit -m "Deploying SDE Admin, last branch committed: $CURRENT"
-    hg push
-    cd ~/Projects/sde/sde-admin/
-}
+# hgmad() {
+#     CURRENT=`hg log -l 1 | grep summary | cut -d" " -f 7`
+#     cd ~/Projects/sde/
+#     hg pull
+#     hg up
+#     hg commit -m "Deploying SDE Admin, last branch committed: $CURRENT"
+#     hg push
+#     cd ~/Projects/sde/sde-admin/
+# }
 
 # ***** Git Functions *****
 
@@ -95,7 +93,7 @@ gnew() {
     git co -b "$1"
     # bundle install
     # bundle exec rake db:migrate
-    git push -u
+    git push -u origin "$1"
 }
 
 # Get the latest changes on master pulled down locally
@@ -106,6 +104,13 @@ grm() {
     git pull
     git checkout $CURRENT
     git rebase master
+}
+
+# Stash current, then update to latest, then pop the stash
+gsrm() {
+    git stash
+    grm
+    git stash pop
 }
 
 # Switch branches by issue number or feature keyword
@@ -130,91 +135,92 @@ assassinate() {
 alias g="git"
 alias gs="git status"
 alias gl="git log"
-alias gg="git gui"
+alias go="git checkout"
 alias gitnew="gnew"
 alias gpull="git pull"
 alias gpush="git push"
+alias gpf="git push -f"
 alias grh="git reset --hard"
+alias grc="git rebase --continue"
 alias gcmm="git checkout --"
 alias gsm="git stash && git co master && git stash pop"
 alias gsd="git stash && git co development"
 alias gmd="git merge development"
 alias gmm="git merge master"
-alias gupdate="git co development && git pull"
-alias glatest="git co development && git pull"
+# alias gupdate="git co development && git pull"
+# alias glatest="git co development && git pull"
 alias gmupdate="git co master && git pull"
 alias gcm="gmupdate"
-alias gphm="git push heroku master"
+# alias gphm="git push heroku master"
 
 # Mercurial (hg) Aliases
-alias hs="hg status"
-alias hgs="hg status"
-alias hgsum="hg summary"
-alias hgar="hg addremove"
-alias hgg="open /Applications/MacHg.app"
-alias hgp="hg push || hg push --new-branch"
-alias hgpush="hgp"
-alias hgpn="hg push --new-branch"
-alias hgpu="hg pull && hg update"
-alias hgpullup="hgpu"
-alias pullup="hgpu"
-alias hgcl="hgc 'Merged latest from PCC to'"
-alias hgml="hg merge PCC && hgcl"
-alias hgl="hg log -l 4 | grep summary"
-alias hglc="hg log -l 4 | grep changeset"
+# alias hs="hg status"
+# alias hgs="hg status"
+# alias hgsum="hg summary"
+# alias hgar="hg addremove"
+# alias hgg="open /Applications/MacHg.app"
+# alias hgp="hg push || hg push --new-branch"
+# alias hgpush="hgp"
+# alias hgpn="hg push --new-branch"
+# alias hgpu="hg pull && hg update"
+# alias hgpullup="hgpu"
+# alias pullup="hgpu"
+# alias hgcl="hgc 'Merged latest from PCC to'"
+# alias hgml="hg merge PCC && hgcl"
+# alias hgl="hg log -l 4 | grep summary"
+# alias hglc="hg log -l 4 | grep changeset"
 
 # Ember Aliases
-alias e="ember"
-alias es="ember server"
-alias eib="ember install:bower"
-alias ein="ember install:npm"
-alias eg="ember generate"
-alias ed="ember destroy"
-alias ebp="ember build -o ../../resource-bundles/Ember.resource/ -prod"
-alias ebd="ember build -o ../../resource-bundles/Ember.resource/"
+# alias e="ember"
+# alias es="ember server"
+# alias eib="ember install:bower"
+# alias ein="ember install:npm"
+# alias eg="ember generate"
+# alias ed="ember destroy"
+# alias ebp="ember build -o ../../resource-bundles/Ember.resource/ -prod"
+# alias ebd="ember build -o ../../resource-bundles/Ember.resource/"
 
 # Basic Aliases
 alias ..="cd .."
 alias cd..="cd .."
-alias cdr="cd ~/remine/remine-app"
 alias p="cd ~/Projects"
 alias h="history"
 # alias a="atom" # atom
 # alias a.="atom ." # atom
 alias o="open"
 alias o.="open ."
-alias s="subl"
-alias s.="subl ."
+# alias s="subl"
+# alias s.="subl ."
 # alias ws.="ws ." # WebStorm
 alias sudo="sudo " # allows sudo in aliases, IIRC
 
 # Bundle/Rails Aliases
-alias be="bundle exec"
-alias becc="bundle exec rake canvas:compile_assets"
-alias berdbm="bundle exec rake db:migrate"
-alias berdm="berdbm"
-alias migrate="bundle exec rake db:migrate"
-alias checkfornew="bundle install && migrate"
-alias cfn="checkfornew"
-alias ber="bundle exec rails"
-alias berc="bundle exec rails console"
-alias berg="bundle exec rails generate"
-alias bers="bundle exec rails server"
-alias besc="bundle exec script/console"
-alias besg="bundle exec script/generate"
-alias bess="bundle exec script/server"
-alias engarde="bundle exec guard"
-alias fs="foreman start"
-alias regenNotes="be rake notifications:clear_notification_groups && be rake notifications:generate_notification_groups"
-alias prod="RAILS_ENV=production"
+# alias be="bundle exec"
+# alias becc="bundle exec rake canvas:compile_assets"
+# alias berdbm="bundle exec rake db:migrate"
+# alias berdm="berdbm"
+# alias migrate="bundle exec rake db:migrate"
+# alias checkfornew="bundle install && migrate"
+# alias cfn="checkfornew"
+# alias ber="bundle exec rails"
+# alias berc="bundle exec rails console"
+# alias berg="bundle exec rails generate"
+# alias bers="bundle exec rails server"
+# alias besc="bundle exec script/console"
+# alias besg="bundle exec script/generate"
+# alias bess="bundle exec script/server"
+# alias engarde="bundle exec guard"
+# alias fs="foreman start"
+# alias regenNotes="be rake notifications:clear_notification_groups && be rake notifications:generate_notification_groups"
+# alias prod="RAILS_ENV=production"
 
 # Grep Aliases
 alias grep="grep --color=auto"
-alias tm="ps -ax | grep -v grep | grep"
+alias findprocess="ps -ax | grep -v grep | grep"
 alias hist="history | grep"
 
 # Open .bashrc for editing, then save
-alias editbash="subl ~/.bashrc"
+alias editbash="code ~/.bashrc"
 alias sourcebash="source ~/.bashrc"
 
 # Empty trash and clear system logs
@@ -306,13 +312,13 @@ function _git_prompt() {
     fi
 }
 
-function _hg_prompt() {
-	local hg_status="`hg sum 2>&1`"
-	if ! [[ "$hg_status" =~ no\ repository\ found ]]; then
-		local branch="`hg sum | grep branch: | cut -d ":" -f 2`"
-		echo -n "$branch"
-	fi
-}
+# function _hg_prompt() {
+# 	local hg_status="`hg sum 2>&1`"
+# 	if ! [[ "$hg_status" =~ no\ repository\ found ]]; then
+# 		local branch="`hg sum | grep branch: | cut -d ":" -f 2`"
+# 		echo -n "$branch"
+# 	fi
+# }
 
 # My Prompt which looks kind of like: (554@12:16) ~/Projects/my_project development 🔥
 # (The current command number@The current time) current directory git_prompt 🔥 (emoji fire symbol).
@@ -328,9 +334,3 @@ PROMPT_COMMAND=_prompt_command
 if [ "$PS1" ]; then
 	echo -e "$(fortune)"
 fi
-### Added by the Heroku Toolbelt
-export PATH="/usr/local/heroku/bin:$PATH"
-
-### Added for rbenv support
-eval "$(rbenv init -)"
-export PATH="$HOME/.yarn/bin:$PATH"
