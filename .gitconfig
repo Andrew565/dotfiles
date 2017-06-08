@@ -1,22 +1,23 @@
 [alias]
 	# other helpful aliases
+
 	s = status
 	cam = commit -am
 	last = cat-file commit HEAD
 	co = checkout
+	rc = rebase --continue
 	unstage = reset HEAD
 	staged = diff --cached
 	squash = rebase -i HEAD^
-	delete-local = branch -D
+	delete-local = branch -d
 	DL = branch -D
 	delete-remote = "!sh -c 'git push origin :$1' -"
 	branches = "!sh -c 'git branch -a | grep -v remotes'"
-	hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
 
 	aliases = !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /'
 
 	# use like `git edit-unmerged; ...edit..., ...test..., get add-unmerged; get commit || rebase --continue
-	edit-unmerged = "!f() { git diff --name-status --diff-filter=U | cut -f2 ; }; $EDITOR `f`"
+	edit-unmerged = "!f() { git diff --name-status --diff-filter=U | cut -f2 ; }; code `f`"
 	add-unmerged = "!f() { git diff --name-status --diff-filter=U | cut -f2 ; }; git add `f`"
 
 [apply]
@@ -32,5 +33,37 @@
 	submodule = 1
 [push]
 	default = current
+[user]
 [credential]
 	helper = osxkeychain
+[core]
+	excludesfile = /Users/andrew/.gitignore_global
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[filter "media"]
+	required = true
+	clean = git media clean %f
+	smudge = git media smudge %f
+[filter "hawser"]
+	clean = git hawser clean %f
+	smudge = git hawser smudge %f
+	required = true
+[user]
+	name = Andrew Steele
+	email = andrew565@gmail.com
+[diff]
+	tool = deltawalker
+[difftool]
+	prompt = false
+[difftool  "deltawalker"]
+	cmd = '/Applications/DeltaWalker.app/Contents/Resources/git-diff' "$LOCAL" "$REMOTE"
+[merge]
+	tool = deltawalker
+[mergetool]
+	keepBackup = false
+[mergetool  "deltawalker"]
+	cmd = '/Applications/DeltaWalker.app/Contents/Resources/git-merge' "$LOCAL" "$REMOTE" "$BASE" "$MERGED"
