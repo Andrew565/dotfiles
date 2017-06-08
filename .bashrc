@@ -1,6 +1,6 @@
 # ***** Andrew's .bashrc file *****
 # There are many like it, but this one's mine.
-# http://about.me/andrewsteele
+# https://andrewthecreator.com
 
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
 
@@ -37,48 +37,48 @@ fi
 
 # commit and close in one
 # hgcc() {
-#     CURRENT=`hg branch`
-#     hg commit -m "$1 $CURRENT" --close-branch
+#   CURRENT=`hg branch`
+#   hg commit -m "$1 $CURRENT" --close-branch
 # }
 
 # create new branch from a default named branch
 # modify the first line to make it an argument if desired
 # hgnew() {
-#     DEST_BRANCH=$2
-#     : ${DEST_BRANCH:='PCC'}
-#     hg up $DEST_BRANCH
-#     hg branch "$1"
-#     hg commit -m "Started $1 branch"
-#     hg push --new-branch
+#   DEST_BRANCH=$2
+#   : ${DEST_BRANCH:='PCC'}
+#   hg up $DEST_BRANCH
+#   hg branch "$1"
+#   hg commit -m "Started $1 branch"
+#   hg push --new-branch
 # }
 
 # commit and append the current branch automatically
 # hgc() {
-#     # get current branch name
-#     CURRENT=`hg branch`
-#     hg commit -m "$1 $CURRENT"
+#   # get current branch name
+#   CURRENT=`hg branch`
+#   hg commit -m "$1 $CURRENT"
 # }
 
 # merge current branch into
 # hgmac() {
-#     # get current branch name
-#     CURRENT=`hg branch`
-#     DEST_BRANCH=$2
-#     : ${DEST_BRANCH:='PCC'}
-#     hg up $DEST_BRANCH
-#     hg merge $CURRENT
-#     hg commit -m "Merged $CURRENT branch"
+#   # get current branch name
+#   CURRENT=`hg branch`
+#   DEST_BRANCH=$2
+#   : ${DEST_BRANCH:='PCC'}
+#   hg up $DEST_BRANCH
+#   hg merge $CURRENT
+#   hg commit -m "Merged $CURRENT branch"
 # }
 
 # "deploy" latest SDE Admin changes by committing to solutions repo
 # hgmad() {
-#     CURRENT=`hg log -l 1 | grep summary | cut -d" " -f 7`
-#     cd ~/Projects/sde/
-#     hg pull
-#     hg up
-#     hg commit -m "Deploying SDE Admin, last branch committed: $CURRENT"
-#     hg push
-#     cd ~/Projects/sde/sde-admin/
+#   CURRENT=`hg log -l 1 | grep summary | cut -d" " -f 7`
+#   cd ~/Projects/sde/
+#   hg pull
+#   hg up
+#   hg commit -m "Deploying SDE Admin, last branch committed: $CURRENT"
+#   hg push
+#   cd ~/Projects/sde/sde-admin/
 # }
 
 # ***** Git Functions *****
@@ -86,31 +86,31 @@ fi
 # create new branch from a default named branch
 # modify the first line to make it an argument if desired
 gnew() {
-    DEST_BRANCH=$2
-    : ${DEST_BRANCH:='master'}
-    git co $DEST_BRANCH
-    git pull
-    git co -b "$1"
-    # bundle install
-    # bundle exec rake db:migrate
-    git push -u origin "$1"
+  DEST_BRANCH=$2
+  : ${DEST_BRANCH:='master'}
+  git co $DEST_BRANCH
+  git pull
+  git co -b "$1"
+  # bundle install # If using Bundler (ruby)
+  # bundle exec rake db:migrate
+  git push -u origin "$1"
 }
 
 # Get the latest changes on master pulled down locally
 # and then rebase them into/onto the current branch
 grm() {
-    CURRENT=`git rev-parse --abbrev-ref HEAD` # figures out the current branch
-    git checkout master
-    git pull
-    git checkout $CURRENT
-    git rebase master
+  CURRENT=`git rev-parse --abbrev-ref HEAD` # figures out the current branch
+  git checkout master
+  git pull
+  git checkout $CURRENT
+  git rebase master
 }
 
 # Stash current, then update to latest, then pop the stash
 gsrm() {
-    git stash
-    grm
-    git stash pop
+  git stash
+  grm
+  git stash pop
 }
 
 # Switch branches by issue number or feature keyword
@@ -118,15 +118,15 @@ gsrm() {
 # NOTE: only works well if you use a unique description, thus the
 # recommendation to use the issue number
 gswitch() {
-    BRANCH=`git branch | grep "$1"`
-    git checkout $BRANCH
+  BRANCH=`git branch | grep "$1"`
+  git checkout $BRANCH
 }
 
 # ***** Other Bash Functions *****
 
 # finds runaway processes by name and kills them
 assassinate() {
-    ps ax | grep "$1" | grep -v grep | cut -f1 -d ' ' | xargs kill
+  ps ax | grep "$1" | grep -v grep | cut -f1 -d ' ' | xargs kill
 }
 
 # ***** ALIASES *****
@@ -194,6 +194,12 @@ alias o.="open ."
 # alias ws.="ws ." # WebStorm
 alias sudo="sudo " # allows sudo in aliases, IIRC
 
+# Electron Aliases
+alias nrb="npm run build"
+alias nre="npm run electron"
+alias ns="npm start"
+alias be="npm run build && npm run electron"
+
 # Bundle/Rails Aliases
 # alias be="bundle exec"
 # alias becc="bundle exec rake canvas:compile_assets"
@@ -244,9 +250,9 @@ alias focusmodeoff="defaults write com.apple.dock single-app -bool false && kill
 
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
-	colorflag="--color"
+  colorflag="--color"
 else # OS X `ls`
-	colorflag="-G"
+  colorflag="-G"
 fi
 
 # List all files colorized in long format, including dot files
@@ -291,33 +297,33 @@ export RESET
 # * Magenta = Uncommitted changes present
 # If on master, just displays a box, otherwise displays branch name
 function _git_prompt() {
-    local git_status="`git status -unormal 2>&1`"
-    if ! [[ "$git_status" =~ Not\ a\ git\ repo ]]; then
-        if [[ "$git_status" =~ nothing\ to\ commit ]]; then
-            local ansi=42
-        elif [[ "$git_status" =~ nothing\ added\ to\ commit\ but\ untracked\ files\ present ]]; then
-            local ansi=43
-        else
-            local ansi=45
-        fi
-        if [[ "$git_status" =~ On\ branch\ ([^[:space:]]+) ]]; then
-            branch=${BASH_REMATCH[1]}
-            test "$branch" != master || branch=' '
-        else
-            # Detached HEAD.  (branch=HEAD is a faster alternative.)
-            branch="(`git describe --all --contains --abbrev=4 HEAD 2> /dev/null ||
-                echo HEAD`)"
-        fi
-        echo -n '\[\e[0;31;'"$ansi"';1m\]'"$branch"'\[\e[0m\] '
+  local git_status="`git status -unormal 2>&1`"
+  if ! [[ "$git_status" =~ Not\ a\ git\ repo ]]; then
+    if [[ "$git_status" =~ nothing\ to\ commit ]]; then
+      local ansi=42
+    elif [[ "$git_status" =~ nothing\ added\ to\ commit\ but\ untracked\ files\ present ]]; then
+      local ansi=43
+    else
+      local ansi=45
     fi
+    if [[ "$git_status" =~ On\ branch\ ([^[:space:]]+) ]]; then
+      branch=${BASH_REMATCH[1]}
+      test "$branch" != master || branch=' '
+    else
+      # Detached HEAD. (branch=HEAD is a faster alternative.)
+      branch="(`git describe --all --contains --abbrev=4 HEAD 2> /dev/null ||
+        echo HEAD`)"
+    fi
+    echo -n '\[\e[0;31;'"$ansi"';1m\]'"$branch"'\[\e[0m\] '
+  fi
 }
 
 # function _hg_prompt() {
-# 	local hg_status="`hg sum 2>&1`"
-# 	if ! [[ "$hg_status" =~ no\ repository\ found ]]; then
-# 		local branch="`hg sum | grep branch: | cut -d ":" -f 2`"
-# 		echo -n "$branch"
-# 	fi
+#   local hg_status="`hg sum 2>&1`"
+#   if ! [[ "$hg_status" =~ no\ repository\ found ]]; then
+#     local branch="`hg sum | grep branch: | cut -d ":" -f 2`"
+#     echo -n "$branch"
+#   fi
 # }
 
 # My Prompt which looks kind of like: (554@12:16) ~/Projects/my_project development 🔥
@@ -326,11 +332,11 @@ function _git_prompt() {
 # \A for current time in hours and minutes (24-hour time)
 # \W for current working directory
 function _prompt_command() {
-    PS1="(\[${YELLOW}\]\A\[${RESET}\]) \W $(_git_prompt)🔥 \[${RESET}\] "
+  PS1="(\[${YELLOW}\]\A\[${RESET}\]) \W $(_git_prompt)🔥 \[${RESET}\] "
 }
 PROMPT_COMMAND=_prompt_command
 
 # This loads a random fortune (`brew install fortune`) the first time the environment loads
 if [ "$PS1" ]; then
-	echo -e "$(fortune)"
+  echo -e "$(fortune)"
 fi
