@@ -147,8 +147,8 @@ alias gsm="git stash && git co master && git stash pop"
 alias gsd="git stash && git co development"
 alias gmd="git merge development"
 alias gmm="git merge master"
-# alias gupdate="git co development && git pull"
-# alias glatest="git co development && git pull"
+alias gupdate="git co development && git pull"
+alias glatest="git co development && git pull"
 alias gmupdate="git co master && git pull"
 alias gcm="gmupdate"
 # alias gphm="git push heroku master"
@@ -194,10 +194,13 @@ alias o.="open ."
 # alias ws.="ws ." # WebStorm
 alias sudo="sudo " # allows sudo in aliases, IIRC
 
-# Electron Aliases
-alias nrb="npm run build"
-alias nre="npm run electron"
+# NPM Scripts Aliases
 alias ns="npm start"
+alias nrb="npm run build"
+alias nt="npm test"
+
+# Electron Aliases
+alias nre="npm run electron"
 alias be="npm run build && npm run electron"
 
 # Bundle/Rails Aliases
