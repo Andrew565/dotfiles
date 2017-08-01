@@ -12,7 +12,6 @@
 * [TODO Highlight](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight) - highlight TODOs, FIXMEs, and any keywords, annotations...
 * [vscode-icons](https://marketplace.visualstudio.com/items?itemName=robertohuertasm.vscode-icons) - Icons for Visual Studio Code
 * [vscode-spotify](https://marketplace.visualstudio.com/items?itemName=shyykoserhiy.vscode-spotify) - Use Spotify inside vscode.
-* [vscode-todo-renewed](https://marketplace.visualstudio.com/items?itemName=HackerFinn.vscode-todo-renewed) - Lists todo:s in the project
 
 Here's the bookmarklet I used to quickly generate these blurbs:
 
