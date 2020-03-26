@@ -12,26 +12,21 @@ bind '"\e[B":history-search-forward'
 # ***** Basic Environment Setup *****
 
 # Setup Path Vars
-export PATH=$(brew --prefix coreutils)/libexec/gnubin:$PATH
+export PATH=$(brew --prefix coreutils)/libexec/gnubin:~/Projects/operations/bin:$PATH
 export CDPATH=".:${HOME}/Projects"
 
 # Prefer US English and use UTF-8
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US"
 
-# Use Sublime Text as editor (instead of vim)
+# Use VSC as editor (instead of vim)
 export EDITOR='code -w'
 
-# Bash Completions
-if [ -f ~/.git-completion.bash ]; then
-  . ~/.git-completion.bash
-fi
+# wrap git with hub
+eval "$(hub alias -s)"
 
-# ***** ANYBAR FUNCTIONS *****
-# . "/Users/andrew/Projects/Andrew/anybar-icon-journal/anybar.sh"
-
-# ***** StatusItem Functions *****
-# alias si="StatusItem -r"
+# source git-completion
+source "/Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash"
 
 # ***** MERCURIAL FUNCTIONS *****
 
@@ -70,47 +65,17 @@ fi
 #   hg commit -m "Merged $CURRENT branch"
 # }
 
-# "deploy" latest SDE Admin changes by committing to solutions repo
-# hgmad() {
-#   CURRENT=`hg log -l 1 | grep summary | cut -d" " -f 7`
-#   cd ~/Projects/sde/
-#   hg pull
-#   hg up
-#   hg commit -m "Deploying SDE Admin, last branch committed: $CURRENT"
-#   hg push
-#   cd ~/Projects/sde/sde-admin/
-# }
-
 # ***** Git Functions *****
 
-# create new branch from a default named branch
-# modify the first line to make it an argument if desired
+# create new branch from either a named branch or the current one
 gnew() {
-  DEST_BRANCH=$2
-  : ${DEST_BRANCH:='master'}
-  git co $DEST_BRANCH
-  git pull
-  git co -b "$1"
-  # bundle install # If using Bundler (ruby)
-  # bundle exec rake db:migrate
-  git push -u origin "$1"
-}
-
-# Get the latest changes on master pulled down locally
-# and then rebase them into/onto the current branch
-grm() {
+  PARENT_BRANCH=$2
   CURRENT=`git rev-parse --abbrev-ref HEAD` # figures out the current branch
-  git checkout master
+  : ${PARENT_BRANCH:=$CURRENT} # If no parent branch argument was provided, use the current branch
+  git co $PARENT_BRANCH # Checkout and update the parent
   git pull
-  git checkout $CURRENT
-  git rebase master
-}
-
-# Stash current, then update to latest, then pop the stash
-gsrm() {
-  git stash
-  grm
-  git stash pop
+  git co -b "$1" # Branch off of the parent
+  git push -u origin "$1" # Immediately push to set up tracking
 }
 
 # Switch branches by issue number or feature keyword
@@ -118,9 +83,11 @@ gsrm() {
 # NOTE: only works well if you use a unique description, thus the
 # recommendation to use the issue number
 gswitch() {
-  BRANCH=`git branch | grep "$1"`
+  BRANCH=`git branch | grep -m 1 "$1"` # returns first match
   git checkout $BRANCH
 }
+
+stashlist() { git stash list -n ${1-10}; }
 
 # ***** Other Bash Functions *****
 
@@ -133,24 +100,31 @@ assassinate() {
 
 # Git Aliases
 alias g="git"
-alias gs="git status"
-alias gl="git log"
-alias go="git checkout"
+alias gcm="gmupdate"
+alias gcmm="git checkout --"
 alias gitnew="gnew"
+alias gl="git log"
+alias glatest="git co development && git pull"
+alias gmd="git merge development"
+alias gmm="git merge origin/master"
+alias gmupdate="git co master && git pull"
+alias go="git checkout"
+alias gpf="git push -f"
 alias gpull="git pull"
 alias gpush="git push"
-alias gpf="git push -f"
-alias grh="git reset --hard"
 alias grc="git rebase --continue"
-alias gcmm="git checkout --"
-alias gsm="git stash && git co master && git stash pop"
+alias grh="git reset --hard"
+alias grm="git rebase origin/master"
+alias grs="git rebase --skip"
+alias gs="git status"
 alias gsd="git stash && git co development"
-alias gmd="git merge development"
-alias gmm="git merge master"
+alias gsl="git stash list"
+alias gsm="git stash && git co master && git stash pop"
+alias gsp="git stash pop"
+alias gsrm="git stash && grm && git stash pop"
+alias gss="git stash"
+alias gsum="git stash && gmm && git stash pop"
 alias gupdate="git co development && git pull"
-alias glatest="git co development && git pull"
-alias gmupdate="git co master && git pull"
-alias gcm="gmupdate"
 # alias gphm="git push heroku master"
 
 # Mercurial (hg) Aliases
@@ -165,8 +139,6 @@ alias gcm="gmupdate"
 # alias hgpu="hg pull && hg update"
 # alias hgpullup="hgpu"
 # alias pullup="hgpu"
-# alias hgcl="hgc 'Merged latest from PCC to'"
-# alias hgml="hg merge PCC && hgcl"
 # alias hgl="hg log -l 4 | grep summary"
 # alias hglc="hg log -l 4 | grep changeset"
 
@@ -177,8 +149,6 @@ alias gcm="gmupdate"
 # alias ein="ember install:npm"
 # alias eg="ember generate"
 # alias ed="ember destroy"
-# alias ebp="ember build -o ../../resource-bundles/Ember.resource/ -prod"
-# alias ebd="ember build -o ../../resource-bundles/Ember.resource/"
 
 # Basic Aliases
 alias ..="cd .."
@@ -198,6 +168,21 @@ alias sudo="sudo " # allows sudo in aliases, IIRC
 alias ns="npm start"
 alias nrb="npm run build"
 alias nt="npm test"
+
+# Yarn Aliases
+alias yas="yarn start"
+alias yb="yarn build"
+alias ydc="yarn dc-start"
+alias yi="yarn install"
+alias yl="yarn lint"
+alias ysl="yarn start"
+alias yt="yarn test"
+alias ytc="yarn coverage"
+alias yti="yarn test:integration"
+alias ytip="yarn run jest -c integration/jest.config.js -t"
+alias ytp="yarn test --testPathPattern"
+alias ytpc="yarn coverage --testPathPattern"
+alias yps="yarn proxy-start"
 
 # Electron Aliases
 alias nre="npm run electron"
@@ -220,8 +205,10 @@ alias be="npm run build && npm run electron"
 # alias bess="bundle exec script/server"
 # alias engarde="bundle exec guard"
 # alias fs="foreman start"
-# alias regenNotes="be rake notifications:clear_notification_groups && be rake notifications:generate_notification_groups"
 # alias prod="RAILS_ENV=production"
+
+# Docker Aliases
+alias dcu="docker-compose down && docker-compose build && docker-compose up"
 
 # Grep Aliases
 alias grep="grep --color=auto"
@@ -303,11 +290,11 @@ function _git_prompt() {
   local git_status="`git status -unormal 2>&1`"
   if ! [[ "$git_status" =~ Not\ a\ git\ repo ]]; then
     if [[ "$git_status" =~ nothing\ to\ commit ]]; then
-      local ansi=42
+      local ansi=$GREEN
     elif [[ "$git_status" =~ nothing\ added\ to\ commit\ but\ untracked\ files\ present ]]; then
-      local ansi=43
+      local ansi=$WHITE
     else
-      local ansi=45
+      local ansi=$RED
     fi
     if [[ "$git_status" =~ On\ branch\ ([^[:space:]]+) ]]; then
       branch=${BASH_REMATCH[1]}
@@ -317,7 +304,7 @@ function _git_prompt() {
       branch="(`git describe --all --contains --abbrev=4 HEAD 2> /dev/null ||
         echo HEAD`)"
     fi
-    echo -n '\[\e[0;31;'"$ansi"';1m\]'"$branch"'\[\e[0m\] '
+    echo -n '\['"$ansi"'\]\W\['"${RESET}"'\] '
   fi
 }
 
@@ -329,13 +316,13 @@ function _git_prompt() {
 #   fi
 # }
 
-# My Prompt which looks kind of like: (554@12:16) ~/Projects/my_project development 🔥
+# My Prompt which looks kind of like: my_project development 🔥
 # (The current command number@The current time) current directory git_prompt 🔥 (emoji fire symbol).
 # Use \! for the current command (useful for history searching or re-running a command using !554)
 # \A for current time in hours and minutes (24-hour time)
 # \W for current working directory
 function _prompt_command() {
-  PS1="(\[${YELLOW}\]\A\[${RESET}\]) \W $(_git_prompt)🔥 \[${RESET}\] "
+  PS1="$(_git_prompt)🔥  "
 }
 PROMPT_COMMAND=_prompt_command
 
@@ -343,3 +330,71 @@ PROMPT_COMMAND=_prompt_command
 if [ "$PS1" ]; then
   echo -e "$(fortune)"
 fi
+
+# Installs some handy default settings
+install_defaults() {
+  # Show all files in Finder
+  defaults write com.apple.Finder AppleShowAllFiles -bool true
+
+  # Don't hide the Library folder in Finder
+  /usr/bin/chflags nohidden ~/Library
+
+  # Show only open applications in the dock
+  defaults write com.apple.dock static-only -bool false
+
+  # Wipe all (default) app icons from the Dock
+  defaults write com.apple.dock persistent-apps -array
+
+  # Set the icon size of Dock items to 16 pixels
+  defaults write com.apple.dock tilesize -int 16
+
+  # Set the magnification to true
+  defaults write com.apple.dock magnification -int 1
+
+  # show the date in the toolbar
+  defaults write com.apple.menuextra.clock DateFormat -string 'EEE MMM d  H:mm'
+
+  # Set alert volume to 0
+  defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.0
+
+  # reboot systemUIServer to enable defaults to take effect
+  killall SystemUIServer
+
+  # Fixes subpixel anti-aliasing on Mojave
+  defaults write -g CGFontRenderingFontSmoothingDisabled -bool FALSE
+}
+
+# Installs homebrew and/or some useful brew defaults
+install_brew_stuff() {
+  # Install brew if not already installed
+  if ! command -v brew >/dev/null; then
+    fancy_echo "Installing Homebrew ..."
+      curl -fsS \
+        'https://raw.githubusercontent.com/Homebrew/install/master/install' | ruby
+  fi
+
+  brew install awscli
+  brew install fortune
+  brew install hub
+  brew install jq
+  brew install openssl
+
+  # Casks
+  brew tap caskroom/cask
+  brew cask install alfred
+  brew cask install iterm2
+  brew cask install keybase
+  brew cask install kindle
+  brew cask install spotify
+}
+
+install_other_stuff() {
+  # Make git use the osx keychain
+  git config --global credential.helper osxkeychain
+}
+
+setup_new_computer() {
+  install_defaults
+  install_brew_stuff
+  install_other_stuff
+}
