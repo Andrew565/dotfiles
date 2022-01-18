@@ -1,8 +1,9 @@
+export BASH_SILENCE_DEPRECATION_WARNING=1
 # ***** Andrew's .bashrc file *****
 # There are many like it, but this one's mine.
 # https://andrewthecreator.com
 
-test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+# test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
 
 # ***** History Searching with Up and Down keys *****
 
@@ -12,58 +13,24 @@ bind '"\e[B":history-search-forward'
 # ***** Basic Environment Setup *****
 
 # Setup Path Vars
-export PATH=$(brew --prefix coreutils)/libexec/gnubin:~/Projects/operations/bin:$PATH
+export M2_HOME=/opt/maven
+export GNUBIN=$(brew --prefix coreutils)/libexec/gnubin
+export MCT=~/Projects/operations/bin
+export MYSQLBIN=/usr/local/mysql/bin
+export JDK=/usr/local/opt/openjdk@11/bin
+export COMPOSER=~/.composer/vendor/bin
+export PATH=${GNUBIN}:${MCT}:${MYSQLBIN}:${M2_HOME}/bin:${JDK}:${COMPOSER}:$PATH
 export CDPATH=".:${HOME}/Projects"
 
 # Prefer US English and use UTF-8
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US"
 
-# Use VSC as editor (instead of vim)
+# Use VSCode as editor (instead of vim)
 export EDITOR='code -w'
-
-# wrap git with hub
-eval "$(hub alias -s)"
 
 # source git-completion
 source "/Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash"
-
-# ***** MERCURIAL FUNCTIONS *****
-
-# commit and close in one
-# hgcc() {
-#   CURRENT=`hg branch`
-#   hg commit -m "$1 $CURRENT" --close-branch
-# }
-
-# create new branch from a default named branch
-# modify the first line to make it an argument if desired
-# hgnew() {
-#   DEST_BRANCH=$2
-#   : ${DEST_BRANCH:='PCC'}
-#   hg up $DEST_BRANCH
-#   hg branch "$1"
-#   hg commit -m "Started $1 branch"
-#   hg push --new-branch
-# }
-
-# commit and append the current branch automatically
-# hgc() {
-#   # get current branch name
-#   CURRENT=`hg branch`
-#   hg commit -m "$1 $CURRENT"
-# }
-
-# merge current branch into
-# hgmac() {
-#   # get current branch name
-#   CURRENT=`hg branch`
-#   DEST_BRANCH=$2
-#   : ${DEST_BRANCH:='PCC'}
-#   hg up $DEST_BRANCH
-#   hg merge $CURRENT
-#   hg commit -m "Merged $CURRENT branch"
-# }
 
 # ***** Git Functions *****
 
@@ -75,7 +42,7 @@ gnew() {
   git co $PARENT_BRANCH # Checkout and update the parent
   git pull
   git co -b "$1" # Branch off of the parent
-  git push -u origin "$1" # Immediately push to set up tracking
+  git push -u --no-verify # Immediately push to set up tracking
 }
 
 # Switch branches by issue number or feature keyword
@@ -110,8 +77,10 @@ alias gmm="git merge origin/master"
 alias gmupdate="git co master && git pull"
 alias go="git checkout"
 alias gpf="git push -f"
+alias gpfn="git push -f --no-verify"
 alias gpull="git pull"
 alias gpush="git push"
+alias gpn="git push --no-verify"
 alias grc="git rebase --continue"
 alias grh="git reset --hard"
 alias grm="git rebase origin/master"
@@ -125,30 +94,7 @@ alias gsrm="git stash && grm && git stash pop"
 alias gss="git stash"
 alias gsum="git stash && gmm && git stash pop"
 alias gupdate="git co development && git pull"
-# alias gphm="git push heroku master"
-
-# Mercurial (hg) Aliases
-# alias hs="hg status"
-# alias hgs="hg status"
-# alias hgsum="hg summary"
-# alias hgar="hg addremove"
-# alias hgg="open /Applications/MacHg.app"
-# alias hgp="hg push || hg push --new-branch"
-# alias hgpush="hgp"
-# alias hgpn="hg push --new-branch"
-# alias hgpu="hg pull && hg update"
-# alias hgpullup="hgpu"
-# alias pullup="hgpu"
-# alias hgl="hg log -l 4 | grep summary"
-# alias hglc="hg log -l 4 | grep changeset"
-
-# Ember Aliases
-# alias e="ember"
-# alias es="ember server"
-# alias eib="ember install:bower"
-# alias ein="ember install:npm"
-# alias eg="ember generate"
-# alias ed="ember destroy"
+alias commit="git cam"
 
 # Basic Aliases
 alias ..="cd .."
@@ -163,11 +109,16 @@ alias o.="open ."
 # alias s.="subl ."
 # alias ws.="ws ." # WebStorm
 alias sudo="sudo " # allows sudo in aliases, IIRC
+alias vpnf="anyconnect full"
+alias vpns="anyconnect split"
 
 # NPM Scripts Aliases
 alias ns="npm start"
 alias nrb="npm run build"
 alias nt="npm test"
+
+# NPM Run Cypress Aliases
+alias nrc="npm run cypress:dev"
 
 # Yarn Aliases
 alias yas="yarn start"
@@ -175,6 +126,7 @@ alias yb="yarn build"
 alias ydc="yarn dc-start"
 alias yi="yarn install"
 alias yl="yarn lint"
+alias ys="yarn start"
 alias ysl="yarn start"
 alias yt="yarn test"
 alias ytc="yarn coverage"
@@ -184,31 +136,13 @@ alias ytp="yarn test --testPathPattern"
 alias ytpc="yarn coverage --testPathPattern"
 alias yps="yarn proxy-start"
 
-# Electron Aliases
-alias nre="npm run electron"
-alias be="npm run build && npm run electron"
-
-# Bundle/Rails Aliases
-# alias be="bundle exec"
-# alias becc="bundle exec rake canvas:compile_assets"
-# alias berdbm="bundle exec rake db:migrate"
-# alias berdm="berdbm"
-# alias migrate="bundle exec rake db:migrate"
-# alias checkfornew="bundle install && migrate"
-# alias cfn="checkfornew"
-# alias ber="bundle exec rails"
-# alias berc="bundle exec rails console"
-# alias berg="bundle exec rails generate"
-# alias bers="bundle exec rails server"
-# alias besc="bundle exec script/console"
-# alias besg="bundle exec script/generate"
-# alias bess="bundle exec script/server"
-# alias engarde="bundle exec guard"
-# alias fs="foreman start"
-# alias prod="RAILS_ENV=production"
+# # Electron Aliases
+# alias nre="npm run electron"
+# alias be="npm run build && npm run electron"
 
 # Docker Aliases
-alias dcu="docker-compose down && docker-compose build && docker-compose up"
+alias dcb="docker-compose down && docker-compose build"
+alias dcu="docker-compose up -d"
 
 # Grep Aliases
 alias grep="grep --color=auto"
@@ -235,7 +169,6 @@ alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && k
 alias focusmode="defaults write com.apple.dock single-app -bool true && killall Dock"
 alias focusmodeoff="defaults write com.apple.dock single-app -bool false && killall Dock"
 
-
 # ***** LS Tweaks *****
 
 # Detect which `ls` flavor is in use
@@ -243,7 +176,7 @@ if ls --color > /dev/null 2>&1; then # GNU `ls`
   colorflag="--color"
 else # OS X `ls`
   colorflag="-G"
-fi
+  fi
 
 # List all files colorized in long format, including dot files
 alias la="ls -la ${colorflag}"
@@ -322,14 +255,14 @@ function _git_prompt() {
 # \A for current time in hours and minutes (24-hour time)
 # \W for current working directory
 function _prompt_command() {
-  PS1="$(_git_prompt)🔥  "
+  PS1="$(_git_prompt)🔥$RESET  "
 }
 PROMPT_COMMAND=_prompt_command
 
 # This loads a random fortune (`brew install fortune`) the first time the environment loads
-if [ "$PS1" ]; then
-  echo -e "$(fortune)"
-fi
+# if [ "$PS1" ]; then
+#   echo -e "$(fortune)"
+# fi
 
 # Installs some handy default settings
 install_defaults() {
