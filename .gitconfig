@@ -20,50 +20,26 @@
 	edit-unmerged = "!f() { git diff --name-status --diff-filter=U | cut -f2 ; }; code `f`"
 	add-unmerged = "!f() { git diff --name-status --diff-filter=U | cut -f2 ; }; git add `f`"
 
-[apply]
-	whitespace = warn
-[color]
-	diff = auto
-	status = auto
-	branch = auto
-	ui = true
-[help]
-	autocorrect = 1
-[status]
-	submodule = 1
 [push]
 	default = current
-[user]
 [credential]
 	helper = osxkeychain
-[core]
-	excludesfile = /Users/andrew/.gitignore_global
-[difftool "sourcetree"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
-[mergetool "sourcetree"]
-	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
-[filter "media"]
-	required = true
-	clean = git media clean %f
-	smudge = git media smudge %f
-[filter "hawser"]
-	clean = git hawser clean %f
-	smudge = git hawser smudge %f
-	required = true
 [user]
 	name = Andrew Steele
 	email = andrew565@gmail.com
-[diff]
-	tool = deltawalker
-[difftool]
-	prompt = false
-[difftool  "deltawalker"]
-	cmd = '/Applications/DeltaWalker.app/Contents/Resources/git-diff' "$LOCAL" "$REMOTE"
-[merge]
-	tool = deltawalker
-[mergetool]
-	keepBackup = false
-[mergetool  "deltawalker"]
-	cmd = '/Applications/DeltaWalker.app/Contents/Resources/git-merge' "$LOCAL" "$REMOTE" "$BASE" "$MERGED"
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true	
+[color]	
+	diff = auto	
+	status = auto	
+	branch = auto	
+	ui = true	
+[help]	
+	autocorrect = 1	
+[status]	
+	submodule = 1
+[core]
+	editor = code -w
